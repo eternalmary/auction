@@ -117,6 +117,13 @@ include 'nav.php';
                     <th>Product</th>
                     <th class="text-center">Bid Info</th>
                     <?php
+                    if ($_SESSION['role_id'] == 4) { 
+                        echo '<th class="text-center">Registered User: Your Reserve Price</th>';
+                        echo '<th class="text-center">Registered User : Current Price</th>';
+                    }
+                   
+
+                    ///////
                     if ($_SESSION['role_id'] == 2) {
                         echo '<th class="text-center">Your Reserve Price</th>';
                     } else if ($_SESSION['role_id'] == 1) {
@@ -137,6 +144,27 @@ include 'nav.php';
                 <tbody>
                 <?php
                 $userid = $_SESSION['user_id'];
+                
+                
+               
+                if ($_SESSION['role_id'] == 4) {
+                    // Bidder
+                    $sql = "SELECT a.auction_id,a.reserve_price, a.viewings, i.label,i.item_picture,max(b.bid_price) as bid_price,u.first_name, u.username, b.user_id, a.user_id AS sellerID, u.email, a.end_time, a.current_bid FROM Bids b
+                            INNER JOIN Auction a ON a.auction_id = b.auction_id
+                            INNER JOIN Users u ON u.user_id = a.user_id
+                            INNER JOIN Item i ON a.item_id = i.item_id WHERE b.user_id = $userid
+                            GROUP BY b.auction_id ORDER BY a.end_time DESC";
+                    
+                    // Seller
+                    //                    No information on bids
+                    //$sql_sell = "SELECT * FROM Auction a
+                    //        INNER JOIN Users u ON a.user_id = u.user_id
+                    //        INNER JOIN Item i ON a.item_id = i.item_id WHERE a.user_id = $userid
+                   //         ORDER BY a.end_time DESC";
+                    
+                }
+                
+                
                 //If bidder
                 if ($_SESSION['role_id'] == 1) {
                     $sql = "SELECT a.auction_id,a.reserve_price, a.viewings, i.label,i.item_picture,max(b.bid_price) as bid_price,u.first_name, u.username, b.user_id, a.user_id AS sellerID, u.email, a.end_time, a.current_bid FROM Bids b
@@ -145,7 +173,7 @@ include 'nav.php';
                             INNER JOIN Item i ON a.item_id = i.item_id WHERE b.user_id = $userid
                             GROUP BY b.auction_id ORDER BY a.end_time DESC";
                 }
-                //               //If seller
+                               //If seller
                 if ($_SESSION['role_id'] == 2) {
 //                    No information on bids
                     $sql = "SELECT * FROM Auction a
@@ -154,13 +182,18 @@ include 'nav.php';
                             ORDER BY a.end_time DESC";
                 }
                 try {
+                   // $data_regUser = $db->query($sql_bid);
+                  //  $data_regUser .= $db->query($sql_sell);
+                  //  $data_regUser->setFetchMode(PDO::FETCH_ASSOC);
+                    
                     $data = $db->query($sql);
                     $data->setFetchMode(PDO::FETCH_ASSOC);
+                    
                 } catch (PDOException $e) {
                     echo 'ERROR: ' . $e->getMessage();
                 }
                 ?>
-                <?php while ($bidauction = $data->fetch()): ?>
+                <?php while ($bidauction = $data->fetch()):  ?>
                     <tr style="vertical-align">
                         <td class="col-sm-12 col-md-4">
                             <div class="media">
@@ -176,7 +209,15 @@ include 'nav.php';
                                             echo htmlspecialchars($bidauction['label']);
                                             ?></a></h4>
                                     <?php
-                                    if ($_SESSION['role_id'] == 1) {
+                                    if ($_SESSION['role_id'] == 1)  {
+                                        ?>
+                                        <h5 class="media-heading"> Sold By: <a
+                                                href="profile.php?user=<?php echo $bidauction['sellerID']; ?>"><?php
+                                                echo htmlspecialchars($bidauction['username'])
+                                                ?></a></h5>
+                                        <?php
+                                    }
+                                    else if ($_SESSION['role_id'] == 4)  {
                                         ?>
                                         <h5 class="media-heading"> Sold By: <a
                                                 href="profile.php?user=<?php echo $bidauction['sellerID']; ?>"><?php
@@ -270,7 +311,7 @@ include 'nav.php';
                                             echo 'Didn\'t meet reserve';
                                         }
                                     }
-                                    if ($_SESSION['role_id'] == 2) {
+                                    else if ($_SESSION['role_id'] == 2) {
                                         echo '<span>Status: </span><span class="text-success"><strong>';
                                         if ($enddt > time()) {
                                             echo 'Ongoing Auction';
@@ -283,6 +324,28 @@ include 'nav.php';
                                             echo 'Item Won but Unconfirmed';
                                         }
                                         if ($enddt <= time() && ($bidauction['current_bid'] < $bidauction['reserve_price'])) {
+                                            echo 'Didn\'t meet reserve';
+                                        }
+                                    }
+                                    else if ($_SESSION['role_id'] == 4) {
+                                        echo '<span>Status: </span><span class=" Registered User text-success"><strong>';
+                                        
+                                        if ($bidauction['bid_price'] >= $bidauction['current_bid'] && $enddt > time()) {
+                                            echo 'Highest Bidder';
+                                        }
+                                        if ($bidauction['bid_price'] < $bidauction['current_bid'] && $enddt > time()) {
+                                            echo 'Losing Item';
+                                        }
+                                        if ($bidauction['bid_price'] < $bidauction['current_bid'] && $enddt < time()) {
+                                            echo 'Item Lost';
+                                        }
+                                        if ($bidauction['bid_price'] >= $bidauction['current_bid'] && $enddt < time() && $result['win_confirmed'] == 1) {
+                                            echo 'Win Confirmed';
+                                        }
+                                        if ($enddt < time() && $result['win_confirmed'] == 0 && $bidauction['current_bid'] > $bidauction['reserve_price'] && $bidauction['bid_price'] >= $bidauction['current_bid'] ) {
+                                            echo 'Item Won but Unconfirmed';
+                                        }
+                                        if ($enddt < time() && ($bidauction['current_bid'] < $bidauction['reserve_price'])) {
                                             echo 'Didn\'t meet reserve';
                                         }
                                     }

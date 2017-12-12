@@ -204,7 +204,8 @@ include('nav.php');
 
                     <!--                    Only buyers can add bids-->
                     <?php
-                    if ($_SESSION['role_id'] == 1)
+                  //  if ($_SESSION['role_id'] == 1)
+                  if (($_SESSION['role_id'] == 1) or ($_SESSION['role_id'] == 4))
                     {
                     ?>
 

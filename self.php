@@ -103,9 +103,12 @@
                                     </tr>
                                     <!--                                    Conditional label based on who you are -->
                                     <?php
-                                    if ($data['role_id'] == 2) {
+                                    if ($data['role_id'] == 4) {
+                                        echo "<td>Rating</td>";
+                                    }
+                                    else if ($data['role_id'] == 2) {
                                         echo "<td>Seller Rating</td>";
-                                    } else {
+                                    } else if ($data['role_id'] == 1){
                                         echo "<td>Buyer Rating</td>";
                                     }
                                     ?>
@@ -128,8 +131,15 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                <input class="btn btn-sm btn-warning" id="edit" type="button" value="Edit">
-                                <input class="btn btn-sm btn-success" disabled type="submit" value="Submit">
+                                   <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+  									<div class="btn-group" >
+                                        <input class="btn btn-md btn-warning" id="edit" type="button" value="Edit">
+                                        <input class="btn btn-md btn-success" disabled type="submit" value="Submit">
+                                     </div>
+                                     <div class="btn-group pull-right" >
+                                     	<input class="btn btn-md btn-danger" onclick="return validate()" id= delete name="deactivate" type="submit" value="Delete account">
+                                     </div>
+                                </div>
                                 </a>
                             </div>
                         </form>
@@ -142,10 +152,33 @@
     </div>
 </div>
 </div>
+<?php
 
-<script>
+if(isset($_POST['deactivate'])) 
+{
+  // here comes your delete query: use $_POST['deleteItem'] as your id
+    echo "hello";
+  $delete = $data['user_id'];
+   $sql = "DELETE FROM `Users` where `Users`.`user_id` = '$delete'"; 
+   // condition: participe a une auction (voir tables WTACH, BIDS et AUCTION)
+   echo $sql;
+   $result=mysql_query($sql);
+   if($result){
+       echo "Deleted Successfully";
+       echo "<BR>";
+       echo "<a href='delete.php'>Back to main page</a>";
+   }
+   
+   else {
+       echo "ERROR";
+   }
+
+}
+?>
+<script type="text/javascript">
     var el = document.getElementById('edit');
     var frm = document.getElementById('profile_form');
+    var user=
     el.addEventListener('click', function () {
         for (var i = 0; i < frm.length; i++) {
             frm.elements[i].disabled = false;
@@ -153,6 +186,16 @@
         }
         frm.elements[0].focus();
     });
+    function validate() {
+	
+    		if (window.confirm("Do you really want to leave?")) { 
+    			//window.location("template.html");
+			$sql= DELETE FROM table_name WHERE column_name=some_value;
+         } else { 
+            		 alert('a sage decision');
+            	 }
+   	 return false;
+    }
 
     function readURL(input) {
         if (input.files && input.files[0]) {

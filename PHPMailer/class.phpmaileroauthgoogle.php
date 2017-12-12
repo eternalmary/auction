@@ -49,16 +49,17 @@ class PHPMailerOAuthGoogle
         $this->oauthUserEmail = $UserEmail;
     }
 
-    private function getProvider() {
-        return new League\OAuth2\Client\Provider\Google([
-            'clientId' => $this->oauthClientId,
-            'clientSecret' => $this->oauthClientSecret
-        ]);
-    }
+//    private function getProvider() {
+//        auction github
+//        [
+ //           'clientId' => $this->oauthClientId,
+   //         'clientSecret' => $this->oauthClientSecret
+ //       ]);
+//    }
 
     private function getGrant()
     {
-        return new \League\OAuth2\Client\Grant\RefreshToken();
+ //       return new \League\OAuth2\Client\Grant\RefreshToken();
     }
 
     private function getToken()

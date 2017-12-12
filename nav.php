@@ -33,11 +33,25 @@ session_start();
                     else if ($_SESSION['role_id'] == 1) {
                         echo '<a href="bidsauctions.php">Your Bids</a>';
                     }
+                    else if ($_SESSION['role_id'] == 4) {
+                        echo '<a href="bidsauctions.php">Your Bids</a>';
+                        
+                    }
                     ?>
+                </li>
+                <li>
+                	<?php
+                		if ($_SESSION['role_id'] == 4) {
+                        echo '<a href="bidsauctions2.php">Your auctions</a>';
+                		}
+                 ?> 
                 </li>
                 <li>
                     <?php
                     if ($_SESSION['role_id'] == 2) {
+                        echo '<a href="addauction.php">Submit Auction</a>';
+                    }
+                    if ($_SESSION['role_id'] == 4) {
                         echo '<a href="addauction.php">Submit Auction</a>';
                     }
                     ?>

@@ -2,6 +2,7 @@
 require_once("dbConnection.php");
 $error_bool = false;
 $required = array('username','password','confirm-password','email','firstname','lastname','dob');
+//$required = array('username','password','confirm-password','email','dob');
 $error_tabs = array();
 
 foreach ($required as $field) {

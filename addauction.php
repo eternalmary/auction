@@ -27,7 +27,8 @@ if (isset($_POST['submit'])) {
     $result = $db->query($sql);
     $row = $result->fetch();
     $value = $row['duration'];
-    $enddate = $enddate->modify('+' . $value . ' day');
+    // $enddate = $enddate->modify('+' . $value . ' day');
+    $enddate = $enddate->modify('+' . $value . ' minutes');
     $formatend = $enddate->format('Y-m-d H:i:s');
     if ($reservePrice > $startPrice) {
         $itemSQL = 'INSERT INTO Item VALUES (NULL, :item_picture, :label, :description, :state_id, :category_id)';
@@ -169,7 +170,7 @@ include 'nav.php';
                     <?php
                     $sql = 'SELECT * FROM Duration';
                     foreach ($db->query($sql) as $row) { ?>
-                        <option value="<?php echo $row['duration_id']; ?>"><?php echo $row['duration']; ?> Days</option>
+                        <option value="<?php echo $row['duration_id']; ?>"><?php echo $row['duration']; ?> Minutes </option>
                     <?php } ?>
                 </select>
             </div>
